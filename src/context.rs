@@ -1,7 +1,7 @@
 use egui_glium::EguiGlium;
 use glium::Display;
 
-use crate::{timer::Timer, io::{keyboard::Keyboard, mouse::Mouse}};
+use crate::{io::{keyboard::Keyboard, mouse::Mouse}};
 
 
 
