@@ -1,3 +1,4 @@
+use egui_winit::winit::event::{WindowEvent, KeyboardInput, ElementState};
 use glium::glutin::event::VirtualKeyCode;
 
 use std::collections::HashMap;
@@ -15,14 +16,42 @@ impl Keyboard {
         }
     }
 
-    pub fn press(&mut self, key: VirtualKeyCode) {
+    fn press(&mut self, key: VirtualKeyCode) {
         self.keys.insert(key, true);
         self.this_frame.insert(key, true);
     }
 
-    pub fn release(&mut self, key: VirtualKeyCode) {
+    fn release(&mut self, key: VirtualKeyCode) {
         self.keys.insert(key, false);
         self.this_frame.insert(key, true);
+    }
+
+    pub fn handle_event(&mut self, event: &WindowEvent) {
+        match event {
+            WindowEvent::KeyboardInput {
+                device_id,
+                input,
+                is_synthetic,
+                ..
+            } => match input {
+                KeyboardInput {
+                    scancode: _,
+                    state,
+                    virtual_keycode,
+                    ..
+                } => match virtual_keycode {
+                    None => {}
+                    Some(key) => {
+                        if state == &ElementState::Pressed {
+                            self.press(*key);
+                        } else {
+                            self.release(*key);
+                        }
+                    }
+                },
+            },
+            _ => {}
+        }
     }
 
     pub fn pressed_this_frame(&self, key: &VirtualKeyCode) -> bool {

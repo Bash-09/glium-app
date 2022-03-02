@@ -87,76 +87,13 @@ pub fn run_with_context(mut app: Box<dyn Application>, mut context: Context, eve
                         app.close();
                         *control_flow = glutin::event_loop::ControlFlow::Exit;
                     }
-                    WindowEvent::CursorMoved {
-                        device_id,
-                        position,
-                        ..
-                    } => {
-                        context.mouse.update_pos((position.x as i32, position.y as i32));
-                    }
-                    WindowEvent::MouseInput {
-                        device_id,
-                        state,
-                        button,
-                        ..
-                    } => {
-                        let mut mbutton: u16 = 0;
-                        match button {
-                            MouseButton::Left => {
-                                mbutton = 0;
-                            }
-                            MouseButton::Middle => {
-                                mbutton = 1;
-                            }
-                            MouseButton::Right => {
-                                mbutton = 2;
-                            }
-                            MouseButton::Other(bnum) => {
-                                if bnum > &(9 as u16) {
-                                    return;
-                                }
-                                mbutton = *bnum;
-                            }
-                        }
-                        let mut pressed = false;
-                        if state == &ElementState::Pressed {
-                            pressed = true;
-                        }
-                        if pressed {
-                            context.mouse.press_button(mbutton as usize);
-                        } else {
-                            context.mouse.release_button(mbutton as usize);
-                        }
-                    }
-                    WindowEvent::MouseWheel {
-                        device_id, delta, ..
-                    } => match delta {
-                        MouseScrollDelta::LineDelta(y, x) => {
-                            context.mouse.scroll((*x, *y));
-                        }
-                        _ => {}
+
+                    WindowEvent::CursorMoved{..} | WindowEvent::MouseInput{..} | WindowEvent::MouseWheel{..} => {
+                        context.mouse.handle_event(event);
                     },
-                    WindowEvent::KeyboardInput {
-                        device_id,
-                        input,
-                        is_synthetic,
-                        ..
-                    } => match input {
-                        KeyboardInput {
-                            scancode: _,
-                            state,
-                            virtual_keycode,
-                            ..
-                        } => match virtual_keycode {
-                            None => {}
-                            Some(key) => {
-                                if state == &ElementState::Pressed {
-                                    context.keyboard.press(*key);
-                                } else {
-                                    context.keyboard.release(*key);
-                                }
-                            }
-                        },
+
+                    WindowEvent::KeyboardInput{..} => {
+                        context.keyboard.handle_event(event);
                     },
                     _ => {}
             }
