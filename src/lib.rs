@@ -96,6 +96,8 @@ pub fn run_with_context(mut app: Box<dyn Application>, mut context: Context, eve
             },
             WindowEvent{ window_id: _, event } => {
                 context.gui.on_event(event);
+                context.handle_event(&ev);
+                app.handle_event(&mut context, &ev);
             },
             _ => {
                 context.handle_event(&ev);
