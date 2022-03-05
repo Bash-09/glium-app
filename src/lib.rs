@@ -6,7 +6,7 @@ pub mod context;
 pub mod timer;
 pub mod io;
 
-use egui_winit::winit::event_loop::EventLoop;
+use egui_winit::winit::event_loop::{EventLoop, ControlFlow};
 pub use timer::Timer;
 
 pub use glium::{
@@ -14,6 +14,7 @@ pub use glium::{
         dpi::{PhysicalSize, Size},
         window::WindowBuilder,
         ContextBuilder,
+        event::Event,
     },
     *
 };
@@ -28,6 +29,8 @@ pub trait Application {
     fn render(&mut self, ctx: &mut Context);
     /// Called when the window is requested to close
     fn close(&mut self);
+    /// Called a number of times between each frame with all new incoming events for the application
+    fn handle_event(&mut self, ctx: &mut Context, event: &Event<()>);
 }
 
 /// Create and run a glium window for this application
@@ -36,7 +39,7 @@ pub trait Application {
 /// 
 /// * `mut app: Box<dyn Application>` - the application you want to run with glium
 /// * `wb: WindowBuilder` - Settings on how the window should be shaped/sized/positioned/resizable etc
-pub fn run(mut app: Box<dyn Application>, wb: WindowBuilder) {
+pub fn run(app: Box<dyn Application>, wb: WindowBuilder) {
     let (ctx, el) = create(wb);
     run_with_context(app, ctx, el);
 }
@@ -72,43 +75,28 @@ pub fn run_with_context(mut app: Box<dyn Application>, mut context: Context, eve
     t.reset();
     event_loop.run(move |ev, _, control_flow| {
 
-        use glutin::event::WindowEvent;
-
         // Handle our own events
         let mut events_cleared = false;
-        use glutin::event::{Event::*, *};
+        use glutin::event::{self, Event::*};
+
         match &ev {
-            glutin::event::Event::WindowEvent { event, .. } => 
-            {
-                let consume = context.gui.on_event(&event);
-
-                match event {
-                    WindowEvent::CloseRequested => {
-                        app.close();
-                        *control_flow = glutin::event_loop::ControlFlow::Exit;
-                    }
-
-                    WindowEvent::CursorMoved{..} | WindowEvent::MouseInput{..} | WindowEvent::MouseWheel{..} => {
-                        context.mouse.handle_event(event);
-                    },
-
-                    WindowEvent::KeyboardInput{..} => {
-                        context.keyboard.handle_event(event);
-                    },
-                    _ => {}
-            }
-            },
             MainEventsCleared => {
                 events_cleared = true;
             }
-            RedrawEventsCleared => {}
             NewEvents(cause) => match cause {
-                StartCause::Init => {
+                event::StartCause::Init => {
                     app.init(&mut context);
                 }
                 _ => {}
             },
-            _ => {}
+            WindowEvent{ window_id: _, event: event::WindowEvent::CloseRequested } => {
+                app.close();
+                *control_flow = ControlFlow::Exit;
+            }
+            _ => {
+                context.handle_event(&ev);
+                app.handle_event(&mut context, &ev);
+            }
         }
 
         if !events_cleared {

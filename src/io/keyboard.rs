@@ -1,4 +1,4 @@
-use egui_winit::winit::event::{WindowEvent, KeyboardInput, ElementState};
+use egui_winit::winit::event::{Event, WindowEvent, KeyboardInput, ElementState};
 use glium::glutin::event::VirtualKeyCode;
 
 use std::collections::HashMap;
@@ -26,29 +26,34 @@ impl Keyboard {
         self.this_frame.insert(key, true);
     }
 
-    pub fn handle_event(&mut self, event: &WindowEvent) {
+    pub fn handle_event(&mut self, event: &Event<()>) {
         match event {
-            WindowEvent::KeyboardInput {
-                device_id,
-                input,
-                is_synthetic,
-                ..
-            } => match input {
-                KeyboardInput {
-                    scancode: _,
-                    state,
-                    virtual_keycode,
-                    ..
-                } => match virtual_keycode {
-                    None => {}
-                    Some(key) => {
-                        if state == &ElementState::Pressed {
-                            self.press(*key);
-                        } else {
-                            self.release(*key);
-                        }
-                    }
-                },
+            Event::WindowEvent { window_id: _, event} => {
+                match event {
+                    WindowEvent::KeyboardInput {
+                        device_id: _,
+                        input,
+                        is_synthetic: _,
+                        ..
+                    } => match input {
+                        KeyboardInput {
+                            scancode: _,
+                            state,
+                            virtual_keycode,
+                            ..
+                        } => match virtual_keycode {
+                            None => {}
+                            Some(key) => {
+                                if state == &ElementState::Pressed {
+                                    self.press(*key);
+                                } else {
+                                    self.release(*key);
+                                }
+                            }
+                        },
+                    },
+                    _ => {}
+                }
             },
             _ => {}
         }
