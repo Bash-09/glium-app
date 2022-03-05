@@ -79,6 +79,7 @@ pub fn run_with_context(mut app: Box<dyn Application>, mut context: Context, eve
         let mut events_cleared = false;
         use glutin::event::{self, Event::*};
 
+
         match &ev {
             MainEventsCleared => {
                 events_cleared = true;
@@ -92,7 +93,10 @@ pub fn run_with_context(mut app: Box<dyn Application>, mut context: Context, eve
             WindowEvent{ window_id: _, event: event::WindowEvent::CloseRequested } => {
                 app.close();
                 *control_flow = ControlFlow::Exit;
-            }
+            },
+            WindowEvent{ window_id: _, event } => {
+                context.gui.on_event(event);
+            },
             _ => {
                 context.handle_event(&ev);
                 app.handle_event(&mut context, &ev);
