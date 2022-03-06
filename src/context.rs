@@ -36,7 +36,7 @@ impl Context {
     }
 
 
-    pub fn set_cursor_grabbed(&self, grabbed: bool) -> Result<(), ExternalError> {
+    pub fn set_mouse_grabbed(&self, grabbed: bool) -> Result<(), ExternalError> {
         let gl_win = self.dis.gl_window();
         let win = gl_win.window();
 
