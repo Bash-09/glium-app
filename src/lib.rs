@@ -23,10 +23,8 @@ pub use glium::{
 pub trait Application {
     /// This function is called after everything is setup but before the first frame is rendered
     fn init(&mut self, ctx: &mut Context);
-    /// Called every frame to give the application a chance to update, the timer provides information like the time since the last frame and the current frame rate
+    /// Called every frame to give the application a chance to update and render, the timer provides information like the time since the last frame and the current frame rate
     fn update(&mut self, t: &Timer, ctx: &mut Context);
-    /// Called every frame after `update`
-    fn render(&mut self, ctx: &mut Context);
     /// Called when the window is requested to close
     fn close(&mut self);
     /// Called a number of times between each frame with all new incoming events for the application
@@ -114,7 +112,6 @@ pub fn run_with_context(mut app: Box<dyn Application>, mut context: Context, eve
             None => {}
             Some(_) => {
                 app.update(&t, &mut context);
-                app.render(&mut context);
 
                 context.mouse.next_frame();
                 context.keyboard.next_frame();
