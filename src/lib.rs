@@ -37,7 +37,7 @@ pub trait Application {
 /// 
 /// * `mut app: Box<dyn Application>` - the application you want to run with glium
 /// * `wb: WindowBuilder` - Settings on how the window should be shaped/sized/positioned/resizable etc
-pub fn run(app: Box<dyn Application>, wb: WindowBuilder) {
+pub fn run<A: 'static + Application>(app: A, wb: WindowBuilder) {
     let (ctx, el) = create(wb);
     run_with_context(app, ctx, el);
 }
@@ -67,7 +67,7 @@ pub fn create(wb: WindowBuilder) -> (Context, EventLoop<()>) {
 /// * `mut app: Box<dyn Application>` - the application you want to run with glium
 /// * `mut context: Context` - A glium_app Context containing a Display, Egui object and io managers
 /// * `event_loop: EventLoop<()>` - The EventLoop for the window
-pub fn run_with_context(mut app: Box<dyn Application>, mut context: Context, event_loop: EventLoop<()>) {
+pub fn run_with_context<A: 'static + Application>(mut app: A, mut context: Context, event_loop: EventLoop<()>) {
     let mut t = Timer::new();
 
     t.reset();
