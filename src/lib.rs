@@ -9,9 +9,8 @@ pub mod io;
 use egui_winit::winit::event_loop::{EventLoop, ControlFlow};
 pub use timer::Timer;
 
-pub use glium::{
+use glium::{
     glutin::{
-        dpi::{PhysicalSize, Size},
         window::WindowBuilder,
         ContextBuilder,
         event::Event,
