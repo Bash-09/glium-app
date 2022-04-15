@@ -53,6 +53,7 @@ impl Mouse {
         self.pos = pos;
     }
 
+    /// This function is called automatically in the application loop, you shouldn't be calling this yourself.
     pub fn handle_event(&mut self, event: &Event<()>) {
         match event {
             Event::WindowEvent {window_id: _, event} => {
@@ -126,6 +127,7 @@ impl Mouse {
         }
     }
 
+    /// Resets the Mouse for the next frame, this function is called automatically so you shouldn't need to call this function yourself.
     pub fn next_frame(&mut self) {
         self.delta = (0.0, 0.0);
         self.wheel = (0.0, 0.0);
@@ -133,28 +135,32 @@ impl Mouse {
     }
 
 
-
-
+    /// Get a tuple containing the x and y position of the mouse inside the window
     pub fn get_pos(&self) -> (i32, i32) {
         self.pos
     }
 
+    /// Get the distance in pixels that the mouse has moved since the last frame
     pub fn get_delta(&self) -> (f64, f64) {
         self.delta
     }
 
+    /// Get the vertical and horizontal scroll distance since last frame
     pub fn get_scroll(&self) -> (f32, f32) {
         self.wheel
     }
 
+    /// Returns if the provided mouse button is currently held down
     pub fn is_pressed(&self, button: usize) -> bool {
         self.pressed[button]
     }
 
+    /// Returns if the provided mouse button was pressed down this frame
     pub fn pressed_this_frame(&self, button: usize) -> bool {
         self.pressed[button] && self.this_frame[button]
     }
 
+    /// Returns if the provided mouse button was released this frame
     pub fn released_this_frame(&self, button: usize) -> bool {
         !self.pressed[button] && self.this_frame[button]
     }

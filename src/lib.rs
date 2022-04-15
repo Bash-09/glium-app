@@ -19,7 +19,7 @@ pub use glium::{
     *
 };
 
-/// Implement this trait then box up your object to run it with `run` or `run_with_context`!
+/// Implement this trait to run it with `run` or `run_with_context`!
 pub trait Application {
     /// This function is called after everything is setup but before the first frame is rendered
     fn init(&mut self, ctx: &mut Context);
@@ -35,7 +35,7 @@ pub trait Application {
 /// 
 /// # Arguments
 /// 
-/// * `mut app: Box<dyn Application>` - the application you want to run with glium
+/// * `mut app: Application` - the application you want to run with glium
 /// * `wb: WindowBuilder` - Settings on how the window should be shaped/sized/positioned/resizable etc
 pub fn run<A: 'static + Application>(app: A, wb: WindowBuilder) {
     let (ctx, el) = create(wb);
@@ -64,7 +64,7 @@ pub fn create(wb: WindowBuilder) -> (Context, EventLoop<()>) {
 /// 
 /// # Arguments
 /// 
-/// * `mut app: Box<dyn Application>` - the application you want to run with glium
+/// * `mut app: Application` - the application you want to run with glium
 /// * `mut context: Context` - A glium_app Context containing a Display, Egui object and io managers
 /// * `event_loop: EventLoop<()>` - The EventLoop for the window
 pub fn run_with_context<A: 'static + Application>(mut app: A, mut context: Context, event_loop: EventLoop<()>) {

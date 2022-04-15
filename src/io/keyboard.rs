@@ -26,6 +26,7 @@ impl Keyboard {
         self.this_frame.insert(key, true);
     }
 
+    /// This function is called automatically in the application loop, you shouldn't be calling this yourself.
     pub fn handle_event(&mut self, event: &Event<()>) {
         match event {
             Event::WindowEvent { window_id: _, event} => {
@@ -59,6 +60,7 @@ impl Keyboard {
         }
     }
 
+    /// Returns if this key was pressed down on this frame
     pub fn pressed_this_frame(&self, key: &VirtualKeyCode) -> bool {
         match self.keys.get(&key) {
             None | Some(false) => false,
@@ -69,6 +71,7 @@ impl Keyboard {
         }
     }
 
+    /// Returns if this key was released on this frame
     pub fn released_this_frame(&self, key: &VirtualKeyCode) -> bool {
         match self.keys.get(&key) {
             Some(true) => false,
@@ -79,6 +82,7 @@ impl Keyboard {
         }
     }
 
+    /// Returns if the key is currently held down
     pub fn is_pressed(&self, key: &VirtualKeyCode) -> bool {
         match self.keys.get(&key) {
             None | Some(false) => false,
@@ -86,6 +90,7 @@ impl Keyboard {
         }
     }
 
+    /// Resets the Keyboard for the next frame, this function is called automatically so you shouldn't need to call this function yourself.
     pub fn next_frame(&mut self) {
         self.this_frame.clear();
     }
