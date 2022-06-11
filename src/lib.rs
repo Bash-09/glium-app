@@ -5,6 +5,7 @@ extern crate glium;
 pub mod context;
 pub mod timer;
 pub mod io;
+pub mod utils;
 
 use egui_winit::winit::event_loop::{EventLoop, ControlFlow};
 pub use timer::Timer;
