@@ -26,7 +26,7 @@ pub trait Application {
     /// Called every frame to give the application a chance to update and render, the timer provides information like the time since the last frame and the current frame rate
     fn update(&mut self, t: &Timer, ctx: &mut Context);
     /// Called when the window is requested to close
-    fn close(&mut self);
+    fn close(&mut self, ctx: &Context);
     /// Called a number of times between each frame with all new incoming events for the application
     fn handle_event(&mut self, ctx: &mut Context, event: &Event<()>);
 }
@@ -89,7 +89,7 @@ pub fn run_with_context<A: 'static + Application>(mut app: A, mut context: Conte
                 _ => {}
             },
             WindowEvent{ window_id: _, event: event::WindowEvent::CloseRequested } => {
-                app.close();
+                app.close(&context);
                 *control_flow = ControlFlow::Exit;
             },
             WindowEvent{ window_id: _, event } => {
