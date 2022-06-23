@@ -9,7 +9,7 @@ pub struct PersistentWindowManager<S> {
 
 static WINDOW_IDS: AtomicU64 = AtomicU64::new(0);
 
-type PersistentWindowFunction<S> = Box<dyn FnMut(&u64, &Context, &mut S) -> bool>;
+type PersistentWindowFunction<S> = Box<dyn FnMut(&u64, &mut Vec<PersistentWindow<S>>, &Context, &mut S) -> bool>;
 
 pub struct PersistentWindow<S> {
     pub id: u64,
@@ -32,8 +32,12 @@ impl<S> PersistentWindowManager<S> {
     }
 
     pub fn render(&mut self, state: &mut S, gui_ctx: &Context) {
+        let mut new_windows: Vec<PersistentWindow<S>> = Vec::new();
+
         self.windows.retain_mut(|window| {
-            (window.function)(&window.id, gui_ctx, state)
+            (window.function)(&window.id, &mut new_windows, gui_ctx, state)
         });
+
+        self.windows.append(&mut new_windows);
     }
 }
