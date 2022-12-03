@@ -11,6 +11,8 @@ pub struct Context {
 
     pub mouse: Mouse,
     pub keyboard: Keyboard,
+    pub block_gui_input: bool,
+    pub block_gui_tab_input: bool,
 }
 
 /// `Context` stores some useful things you might want to use in your app, including input from a Keyboard and Mouse,
@@ -24,6 +26,8 @@ impl Context {
 
             mouse: Mouse::new(),
             keyboard: Keyboard::new(),
+            block_gui_input: false,
+            block_gui_tab_input: false,
         }
     }
 

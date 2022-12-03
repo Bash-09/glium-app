@@ -7,7 +7,7 @@ pub mod timer;
 pub mod io;
 pub mod utils;
 
-use egui_winit::winit::event_loop::{EventLoop, ControlFlow};
+use egui_winit::winit::{event_loop::{EventLoop, ControlFlow}, event::{KeyboardInput, VirtualKeyCode}};
 pub use timer::Timer;
 
 use glium::{
@@ -93,7 +93,16 @@ pub fn run_with_context<A: 'static + Application>(mut app: A, mut context: Conte
                 *control_flow = ControlFlow::Exit;
             },
             WindowEvent{ window_id: _, event } => {
-                context.gui.on_event(event);
+                if !context.block_gui_input {
+                    if context.block_gui_tab_input {
+                        if let glutin::event::WindowEvent::KeyboardInput { input: KeyboardInput { virtual_keycode: Some(VirtualKeyCode::Tab), .. }, .. } = event {
+                        } else {
+                            context.gui.on_event(event);
+                        }
+                    } else {
+                        context.gui.on_event(event);
+                    }
+                }
                 context.handle_event(&ev);
                 app.handle_event(&mut context, &ev);
             },
